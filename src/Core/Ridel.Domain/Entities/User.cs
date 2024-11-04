@@ -20,5 +20,6 @@ namespace Ridel.Domain.Entities
 
         // Kullanıcı detayları
         public UserDetail UserDetail { get; set; }
+        public ICollection<Subscription>  Subscriptions { get; set; }
     }
 }
