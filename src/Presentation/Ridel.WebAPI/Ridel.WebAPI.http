@@ -1,0 +1,6 @@
+@Ridel.WebAPI_HostAddress = http://localhost:5290
+
+GET {{Ridel.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
