@@ -5,6 +5,8 @@ using Ridel.Infrastructure;
 using Ridel.Persistence.Seeds;
 using System.Text.Json.Serialization;
 using System.Reflection;
+using Ridel.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +14,8 @@ builder.Services.RegisterPersistence(builder.Configuration);
 builder.Services.RegisterInfrastructure(builder.Configuration);
 builder.Services.RegisterApplication(builder.Configuration);
 
-
-
  
+
 builder.Services.AddControllers()
           .AddJsonOptions(options =>
           {
@@ -79,9 +80,16 @@ var app = builder.Build();
 using (IServiceScope? scope = app.Services.CreateScope())
 {
     IServiceProvider? services = scope.ServiceProvider;
+
+    //veritabanýný otomatik miglemek lazým
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    await context.Database.MigrateAsync();
+
     await SeedRolesService.SeedRolesAsync(services);
+
 }
 
+ 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
