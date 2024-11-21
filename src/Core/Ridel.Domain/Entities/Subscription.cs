@@ -16,7 +16,7 @@ namespace Ridel.Domain.Entities
 
         public SubscriptionType Type { get; set; } // Abonelik türü (Driver veya Dispatcher)
 
-        public int SubscriptionPackageId { get; set; } // Abonelik paketinin ID'si
+        public Guid SubscriptionPackageId { get; set; } // Abonelik paketinin ID'si
         public SubscriptionPackage SubscriptionPackage { get; set; } // İlişkili paket
 
         public enum SubscriptionType

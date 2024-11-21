@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Ridel.Persistence.Contexts;
@@ -11,9 +12,11 @@ using Ridel.Persistence.Contexts;
 namespace Ridel.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241121193050_mig11")]
+    partial class mig11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -451,7 +454,7 @@ namespace Ridel.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SubscriptionPackages");
+                    b.ToTable("SubscriptionPackage");
                 });
 
             modelBuilder.Entity("Ridel.Domain.Entities.Trip", b =>
@@ -989,7 +992,7 @@ namespace Ridel.Persistence.Migrations
             modelBuilder.Entity("Ridel.Domain.Entities.Subscription", b =>
                 {
                     b.HasOne("Ridel.Domain.Entities.SubscriptionPackage", "SubscriptionPackage")
-                        .WithMany("Subscriptions")
+                        .WithMany()
                         .HasForeignKey("SubscriptionPackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1104,11 +1107,6 @@ namespace Ridel.Persistence.Migrations
 
                     b.Navigation("Trip")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Ridel.Domain.Entities.SubscriptionPackage", b =>
-                {
-                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("Ridel.Domain.Entities.User", b =>

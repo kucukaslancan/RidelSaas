@@ -8,17 +8,18 @@ namespace Ridel.Persistence.Contexts
 {
     public class ApplicationDbContext : IdentityDbContext<User, ApplicationRole, string>
     {
-        
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
- 
+
 
         // DbSet Tanımlamaları
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<OrderDetails> OrderDetails { get; set; }
         public DbSet<Dispatcher> Dispatchers { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<SubscriptionPackage> SubscriptionPackages { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Offer> Offers { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
@@ -36,28 +37,52 @@ namespace Ridel.Persistence.Contexts
             builder.Entity<Subscription>(entity =>
             {
                 entity.HasOne(s => s.User)
-                      .WithMany(u => u.Subscriptions) // Kullanıcı ile bir-to-many ilişki
+                      .WithMany(u => u.Subscriptions)
                       .HasForeignKey(s => s.UserId)
                       .IsRequired();
 
                 entity.HasOne(s => s.SubscriptionPackage)
-                      .WithMany()
-                      .HasForeignKey(s => s.SubscriptionPackageId)
+                      .WithMany(sp => sp.Subscriptions)  // SubscriptionPackage'ın birden fazla Subscription'ı olabilir
+                      .HasForeignKey(s => s.SubscriptionPackageId)  // Yabancı anahtar ilişkiyi kurar
                       .IsRequired();
             });
 
-            builder.Entity<SubscriptionPackage>(entity =>
-            {
-                entity.Property(p => p.Name)
-                      .IsRequired()
-                      .HasMaxLength(100); // Paket adı zorunlu ve 100 karakter uzunluğunda olacak
+            // Subscription ile SubscriptionPackage arasında ilişki tanımlanabilir
+            //builder.Entity<Subscription>()
+            //    .HasOne(s => s.SubscriptionPackage)
+            //    .WithMany()
+            //    .HasForeignKey(s => s.SubscriptionPackageId)
+            //    .OnDelete(DeleteBehavior.Restrict); // İlişkili paketin silinmesini kısıtla
 
-                entity.Property(p => p.Price)
-                      .IsRequired(); // Fiyat zorunlu
+            //builder.Entity<Subscription>()
+            //    .Property(s => s.Type)
+            //    .HasConversion<string>(); // Enum'ı string olarak sakla
 
-                entity.Property(p => p.DurationInDays)
-                      .IsRequired(); // Süre zorunlu
-            });
+            //builder.Entity<Subscription>(entity =>
+            //{
+            //    entity.HasOne(s => s.User)
+            //          .WithMany(u => u.Subscriptions) // Kullanıcı ile bir-to-many ilişki
+            //          .HasForeignKey(s => s.UserId)
+            //          .IsRequired();
+
+            //    entity.HasOne(s => s.SubscriptionPackage)
+            //          .WithMany()
+            //          .HasForeignKey(s => s.SubscriptionPackageId)
+            //          .IsRequired();
+            //});
+
+            //builder.Entity<SubscriptionPackage>(entity =>
+            //{
+            //    entity.Property(p => p.Name)
+            //          .IsRequired()
+            //          .HasMaxLength(100); // Paket adı zorunlu ve 100 karakter uzunluğunda olacak
+
+            //    entity.Property(p => p.Price)
+            //          .IsRequired(); // Fiyat zorunlu
+
+            //    entity.Property(p => p.DurationInDays)
+            //          .IsRequired(); // Süre zorunlu
+            //});
 
             // User ve UserDetail arasındaki birebir ilişki
             builder.Entity<User>()
