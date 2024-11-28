@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Ridel.Domain.Entities;
 using Ridel.Domain.Entities.Role;
 using Ridel.Domain.ValueObjects.Order;
@@ -12,13 +13,34 @@ namespace Ridel.Persistence.Contexts
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
- 
+        public ApplicationDbContext() { }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                // appsettings.json'dan bağlantı dizesini okuyun
+
+                var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Presentation", "Ridel.WebAPI");
+
+                // appsettings.json'ı doğru konumdan okuyoruz
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(basePath)
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .Build();
+
+                var connectionString = configuration.GetConnectionString("DatabaseConnection");
+
+                optionsBuilder.UseNpgsql(connectionString);
+            }
+        }
+
 
         // DbSet Tanımlamaları
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<OrderDetails> OrderDetails { get; set; }
         public DbSet<Dispatcher> Dispatchers { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<SubscriptionPackage> SubscriptionPackages { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Offer> Offers { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
@@ -57,6 +79,7 @@ namespace Ridel.Persistence.Contexts
 
                 entity.Property(p => p.DurationInDays)
                       .IsRequired(); // Süre zorunlu
+                entity.HasKey(p => p.Id);
             });
 
             // User ve UserDetail arasındaki birebir ilişki

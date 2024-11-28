@@ -395,6 +395,9 @@ namespace Ridel.Persistence.Migrations
                     b.Property<decimal>("SubscriptionFee")
                         .HasColumnType("numeric");
 
+                    b.Property<int>("SubscriptionPackageId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -407,9 +410,42 @@ namespace Ridel.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SubscriptionPackageId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("Ridel.Domain.Entities.SubscriptionPackage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("DurationInDays")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsFreeTrial")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubscriptionPackages");
                 });
 
             modelBuilder.Entity("Ridel.Domain.Entities.Trip", b =>
@@ -946,11 +982,19 @@ namespace Ridel.Persistence.Migrations
 
             modelBuilder.Entity("Ridel.Domain.Entities.Subscription", b =>
                 {
-                    b.HasOne("Ridel.Domain.Entities.User", "User")
+                    b.HasOne("Ridel.Domain.Entities.SubscriptionPackage", "SubscriptionPackage")
                         .WithMany()
+                        .HasForeignKey("SubscriptionPackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ridel.Domain.Entities.User", "User")
+                        .WithMany("Subscriptions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("SubscriptionPackage");
 
                     b.Navigation("User");
                 });
@@ -1061,6 +1105,8 @@ namespace Ridel.Persistence.Migrations
                     b.Navigation("OffersAccepted");
 
                     b.Navigation("OrdersCreated");
+
+                    b.Navigation("Subscriptions");
 
                     b.Navigation("UserDetail")
                         .IsRequired();

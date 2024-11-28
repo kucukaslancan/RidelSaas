@@ -15,6 +15,7 @@ namespace Ridel.Persistence
         public IUserDetailRepository UserDetail { get; private set; }
         public IVehicleTypeRepository VehicleType { get; private set; }
         public IVehicleFeatureRepository VehicleFeature { get; private set; }
+        public IVehicleRepository Vehicle {  get; private set; }
          
 
         public UnitOfWork(ApplicationDbContext context)
@@ -27,6 +28,8 @@ namespace Ridel.Persistence
         public IVehicleTypeRepository VehicleTypeRepository => VehicleType ??= new VehicleTypeRepository(_context);
 
         public IVehicleFeatureRepository VehicleFeatureRepository => VehicleFeature ??= new VehicleFeatureRepository(_context);
+
+        public IVehicleRepository VehicleRepository => Vehicle ??= new VehicleRepository(_context);
 
         public async Task<int> CompleteAsync()
         {

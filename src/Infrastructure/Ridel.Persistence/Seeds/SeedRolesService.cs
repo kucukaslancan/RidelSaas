@@ -26,7 +26,7 @@ namespace Ridel.Persistence.Seeds
 
             User? adminUser = new User
             {
-                UserName = "can",
+                UserName = "faatih",
                 Email = "admin@can.com",
                 EmailConfirmed = true,
                 FirstName = "Can Küçükaslan"
